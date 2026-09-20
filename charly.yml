@@ -8,7 +8,35 @@
 # Declaring discover: is the whole fix: the candy is scanned, the CUE schema gate
 # applies, and the STOCK `charly box validate` step starts working with no workflow
 # change. This file declares no entities of its own - it only tells charly where to look.
-version: 2026.232.0520
+version: 2026.249.2125
 discover:
     - path: candy
       recursive: true
+
+check-feature-app:
+    local:
+        description: |-
+            Minimal kind:local template for the check-feature-local bed — composes the
+            command-only candy/plugin-feature (no install content) so the bed exercises the
+            externalized `charly feature` CLI host-side.
+        candy:
+            - plugin-feature
+check-feature-local:
+    local:
+        from: check-feature-app
+        host: local
+        disposable: true
+        lifecycle: dev
+        description: >-
+            Sole proof of the externalized `charly feature` COMMAND (candy/plugin-feature, command:feature). A disposable kind:local deploy on host: local runs `charly feature list candy` host-side: feature is COMPILED-IN, so its Invoke(OpRun) is dispatched in-proc ("Seam A", dispatchInProcCommand), which threads the in-proc reverse channel; the plugin loads the project PLUGIN-SIDE over the loader reverse legs (loaderkit — the former "feature" HostBuild seam is DELETED, K-wave 2 cone R6) and owns the list output. The command exits 0 and lists the project's candies — including the `plugin-feature` candy itself — proving the compiled-in command + the plugin-side loader enumeration end-to-end.
+        plan:
+            - check: command=charly feature list candy exits 0 and lists the plugin-feature candy (proving the compiled-in command's plugin-side loader enumeration end-to-end)
+              id: feature-list-runs
+              exit_status: 0
+              stdout:
+                - contains: 'candy plugin-feature'
+              context:
+                - runtime
+              command:
+                command: ${CHARLY_BIN} feature list candy
+                in_container: false
