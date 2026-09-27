@@ -20,6 +20,7 @@ package feature
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"os"
 
@@ -27,16 +28,20 @@ import (
 	pb "github.com/opencharly/spec/proto"
 )
 
+//go:embed schema/*.cue
+var schemaFS embed.FS
+
 // NewProvider returns the feature provider.
 func NewProvider() pb.ProviderServer { return &provider{} }
 
 // NewMeta advertises command:feature — the COMPILED-IN registry path resolves it (registerCompiledPlugin
 // → resolve(ClassCommand,"feature") → dispatchInProcCommand → Invoke(OpRun) with the threaded in-proc
-// reverse channel) — plus the self-contained doc schema, via sdk.NewMeta.
+// reverse channel) — together with the plugin's OWN self-contained CUE schema (schema/feature.cue),
+// served over Describe via sdk.NewMeta — there is NO schema-less plugin.
 func NewMeta() pb.PluginMetaServer {
 	return sdk.NewMeta("2026.179.0000",
 		[]sdk.ProvidedCapability{{Class: "command", Word: "feature"}},
-		nil)
+		schemaFS)
 }
 
 // CliMain is the out-of-process CLI entrypoint (only reached when feature is NOT compiled in). feature
