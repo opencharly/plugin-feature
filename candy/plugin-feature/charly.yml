@@ -1,7 +1,5 @@
-version: 2026.232.0520
 plugin-feature:
     candy:
-        version: 2026.179.0000
         description: |-
             COMPILED-IN charly COMMAND-class plugin (command:feature) serving the externalized
             `charly feature …` CLI — the plan-shaped-description inspection surface
