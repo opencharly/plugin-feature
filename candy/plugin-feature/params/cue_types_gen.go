@@ -19,9 +19,9 @@ package params
 // it compiles STANDALONE (the property that lets the SDK compile it serve-side).
 type FeaturePlugin struct {
 	// The capability word the plugin serves.
-	Command string `yaml:"command,omitempty" json:"command"`
+	Command string `json:"command"`
 
 	// What the command does, in one line (the public-docs surface): inspect a
 	// project's plan-shaped entity descriptions (list / pending / validate).
-	Contract string `yaml:"contract,omitempty" json:"contract"`
+	Contract string `json:"contract"`
 }
